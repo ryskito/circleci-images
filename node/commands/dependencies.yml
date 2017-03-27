@@ -5,13 +5,12 @@ descriptions: |
 steps:
 - restore_cache:
     keys:
-      - v2-node-dependencies-{{ checksum "package.json" }}
-      - v2-node-dependencies-
+      - v1-node-dependencies-{{ checksum "package.json" }}
+      - v1-node-dependencies-
 - run:
-    name: yarn install
+    name: Install node dependencies
     command: yarn install || yarn install || yarn install
 - save_cache:
-    key: v2-node-dependencies-{{ checksum "package.json" }}
+    key: v1-node-dependencies-{{ checksum "package.json" }}
     paths:
       - node_modules
-      - ~/.cache/yarn

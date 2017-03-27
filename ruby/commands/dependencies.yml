@@ -1,0 +1,22 @@
+type: command
+name: Install Ruby dependencies
+descriptions: |
+  install ruby dependencies and cache them
+steps:
+- restore_cache:
+    name: Restore ruby dependencies
+    keys:
+      - v1-ruby-dependencies-{{ checksum "Gemfile" }}
+      - v1-ruby-dependencies-
+- run:
+    name: Install ruby dependencies
+    command: bundle install --path vendor/bundle --job=4 --retry=3
+    environment:
+      RAILS_ENV: test
+      RACK_ENV: test
+- save_cache:
+    name: Save ruby dependencies
+    key: v1-ruby-dependencies-{{ checksum "Gemfile" }}
+    paths:
+      - vendor/bundle
+
