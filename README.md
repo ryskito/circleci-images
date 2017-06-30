@@ -1,17 +1,25 @@
-# CircleCI Bundles
+# CircleCI Images [![CircleCI Build Status](https://circleci.com/gh/circleci/circleci-images.svg?style=shield)](https://circleci.com/gh/circleci/circleci-images) [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/circleci/circleci-docs/master/LICENSE) [![CircleCI Community](https://img.shields.io/badge/community-CircleCI%20Discuss-343434.svg)](https://discuss.circleci.com)
 
+A set of convenience images that work better in context of CI.  This repo contains the official set of images that CircleCI maintains.  It contains language as well as services images:
 
-A place holder for CircleCI Bundles.
+* Language images (e.g. `ruby`, `python`, `node`) are images targeted for common programming languages with the common tools pre-installed.  They primarily extend the [official images](#official-images) and install additional tools (e.g. browsers) that we find very useful in context of CI.
+* Service images (e.g. `mongo`, `postgres`) are images that have the services pre-configured with development/CI mode.  They also primarily extend the corresponding [official images](#official-images) but with sensible development/CI defaults (e.g. disable production checks, default to nojournal to speed up tests)
 
-A Bundle is a set of reusable resources aimed to ease working with specific languages/stacks in CircleCI.
+## Official Images
 
-Each bundle may have the following:
+We extend [Docker Official Repositories](https://docs.docker.com/docker-hub/official_repos/) in order to start with the same consistent set of images.
 
-* Images: a set of conveniance images that work better in context of CI.  This repo contains the official set of images that CircleCI maintains.  It contains language as well as services images.
-  * Language images (e.g. `ruby`, `python`, `node`) are images targetted for common programming languages with the common tools pre-installed.  They primarily extend the official images and install additional tools (e.g. browsers) that we find very useful in context of CI.
-  * Services images (e.g. `mongo`, `postgres`) are images that have the services pre-configured with development/CI mode.  They also primarily extend the corresponding official images but with sensible development/CI defaults (e.g. disable production checks, default to nojournal to speed up tests)
+This allows us to make things more standardized. From our scripts for checking for updates, the type of OS on the base image, and so forth. We can recommend using `apt-get install` rather than documenting various constraints depending on which stack you're using.
 
-* Commands: a set of individual steps that users can reference in their CircleCI build configuration files.  For example, `ruby/rspec` is a command that users can reference that will automatically split tests in context of parallel builds.
+The official images on Docker Hub are curated by Docker as their way to provide convenience images which address both development and production needs. Since Docker sponsors a dedicated team responsible for reviewing each of the official images, we can take advantage of the community maintaining them independently without trying to track all of the sources and building automations for each one. For now we can take a shortcut, without building this infrastructure.
+
+Finally, our convenience images are augmenting these official images, by adding some missing packages, that we install ourselves for common dependencies shared for the CI environment.
+
+All of the official images on Docker Hub have an "_" for the username, for example:
+https://hub.docker.com/_/ruby
+
+You can view all of the officially supported images here:
+https://hub.docker.com/explore/
 
 
 # How to add a bundle with images
@@ -63,3 +71,4 @@ Also, add the bundle name to in Makefile `BUNDLES` field.
 * The template language is WIP - it only supports `{{BASE_IMAGE}}` template.  We should extend this.
 * Generated dockerfiles isn't checked into repo.  Since we track moving set of tags, checking into repository can create lots of unnecessary changes
 * By default, this pushes to `notnoopci/` Dockerhub org (treated as staging).  Once we get some test builds with these images, we can promote them to `circleci` Dockerhub org
+

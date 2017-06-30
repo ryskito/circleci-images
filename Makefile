@@ -1,15 +1,20 @@
 BUNDLES = \
-  node python ruby golang \
-  postgres mysql mongo
+  android node python ruby golang php \
+  postgres mysql mongo elixir \
+  clojure openjdk
 
 images: $(foreach b, $(BUNDLES), $(b)/generate_images)
 
-publish_images: $(foreach b, $(BUNDLES), $(b)/publish_images)
+publish_images: images
+	find . -name Dockerfile -exec ./shared/images/build.sh {} \;
 
 %/generate_images:
-	cd $(@D); ./generate-images
+	cd $(@D) && ./generate-images
 
-%/publish_images:
-	cd $(@D); ./generate-images publish
+%/publish_images: %/generate_images
+	find ./$(@D) -name Dockerfile | xargs -n 1 ./shared/images/build.sh
 
+%/clean:
+	cd $(@D) ; rm -r images || true
 
+clean: $(foreach b, $(BUNDLES), $(b)/clean)

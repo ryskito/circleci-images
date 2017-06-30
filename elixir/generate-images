@@ -1,7 +1,7 @@
 #!/bin/bash
 
-NAME="Go (golang)"
-BASE_REPO=golang
+NAME="elixir"
+BASE_REPO=elixir
 VARIANTS=(browsers)
 
 source ../shared/images/generate.sh
