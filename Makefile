@@ -1,7 +1,7 @@
 BUNDLES = \
   android node python ruby golang php \
   postgres mysql mongo elixir jruby \
-  clojure openjdk buildpack-deps
+  clojure openjdk buildpack-deps mariadb
 
 images: $(foreach b, $(BUNDLES), $(b)/generate_images)
 
