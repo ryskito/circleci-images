@@ -1,10 +1,11 @@
 #!/bin/bash
 set -ex
 
-for API in 23 24 25 26; do
+for API in 23 24 25 26 27; do
   echo Generating Android ${API} Dockerfile
   TAG=api-${API}-alpha
   mkdir -p images/${TAG}
   cp -r bin images/${TAG}
+  echo "${TAG}" > images/${TAG}/TAG
   m4 -DAPI_LEVEL=${API} Dockerfile.m4 > images/${TAG}/Dockerfile
 done
