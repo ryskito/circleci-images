@@ -22,11 +22,11 @@ publish_images: images
 
 clean: $(foreach b, $(BUNDLES), $(b)/clean)
 
-build_images: images
-	find . -name Dockerfile | awk '{ print length, $0 }' | sort -n -s | cut -d" " -f2- | sed 's|/Dockerfile|/build_image|g' | xargs -n1 make
+only_build_images: images
+	find . -name Dockerfile | awk '{ print length, $0 }' | sort -n -s | cut -d" " -f2- | sed 's|/Dockerfile|/only_build_image|g' | xargs -n1 make
 
-%/build_images: %/generate_images
-	find ./$(@D) -name Dockerfile | awk '{ print length, $$0 }' | sort -n -s | cut -d" " -f2- | sed 's|/Dockerfile|/build_image|g' | xargs -n1 make
+%/only_build_images: %/generate_images
+	find ./$(@D) -name Dockerfile | awk '{ print length, $$0 }' | sort -n -s | cut -d" " -f2- | sed 's|/Dockerfile|/only_build_image|g' | xargs -n1 make
 
-%/build_image: %/Dockerfile
-	./shared/images/build.sh ./$(@D)/Dockerfile
+%/only_build_image: %/Dockerfile
+	./shared/images/only-build.sh ./$(@D)/Dockerfile

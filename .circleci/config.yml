@@ -36,7 +36,7 @@ jobs:
           command: |
             export NEW_ORG=notnoopci
 
-            make -j $PLATFORM/build_images
+            make -j $PLATFORM/only_build_images
 
   publish_image: &publish_image
     machine: true
