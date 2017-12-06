@@ -13,7 +13,8 @@ else \
   && gem uninstall bundler -x \
   && cd /usr/local/lib/ruby/site_ruby/$RUBY_MAJOR.0/ \
   && rm -rf bundler bundler.rb \
-  && gem install bundler -v 1.15.4
+  && gem install bundler -v 1.15.4 \
+fi
 '
 
 source ../shared/images/generate-node.sh
