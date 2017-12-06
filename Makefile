@@ -21,3 +21,12 @@ publish_images: images
 	cd $(@D) ; rm -r images || true
 
 clean: $(foreach b, $(BUNDLES), $(b)/clean)
+
+build_images: images
+	find . -name Dockerfile | awk '{ print length, $0 }' | sort -n -s | cut -d" " -f2- | sed 's|/Dockerfile|/build_image|g' | xargs -n1 make
+
+%/build_images: %/generate_images
+	find ./$(@D) -name Dockerfile | awk '{ print length, $$0 }' | sort -n -s | cut -d" " -f2- | sed 's|/Dockerfile|/build_image|g' | xargs -n1 make
+
+%/build_image: %/Dockerfile
+	./shared/images/build.sh ./$(@D)/Dockerfile
