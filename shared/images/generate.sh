@@ -120,6 +120,8 @@ function render_readme_template() {
 rm -rf images
 mkdir -p images
 
+echo $(find_tags_and_aliases)
+
 for tag_aliases in $(find_tags_and_aliases)
 do
   tag=$(echo "$tag_aliases" | cut -d: -f1)
