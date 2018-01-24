@@ -222,6 +222,7 @@ workflows:
                 - master
                 - production
                 - parallel
+                - fixmongo
       - publish_android:  *workflow_filters
       - publish_node:     *workflow_filters
       - publish_python:   *workflow_filters
