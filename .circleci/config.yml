@@ -17,6 +17,37 @@ jobs:
       - store_artifacts:
           path: /tmp/dockerfiles
           destination: Dockerfiles
+      # upload Dockerfiles to circleci-public/circleci-dockerfiles repo
+      - add_ssh_keys:
+          fingerprints:
+            - "af:0a:93:75:51:75:1f:16:90:d9:97:b1:7a:bb:f0:27"
+      - run:
+          name: git config
+          command: |
+            git config --global user.email "$CIRCLE_USERNAME@users.noreply.github.com"
+            git config --global user.name "$CIRCLE_USERNAME"
+      - run: git clone git@github.com:CircleCI-Public/circleci-dockerfiles.git
+      # only push Dockerfiles to github on circleci-images pushes to "master" or "production"
+      - run:
+          name: branch control flow & git push
+          working_directory: circleci-dockerfiles
+          command: |
+            if [[ "$CIRCLE_BRANCH" == "production" ]]
+            then
+              export DOCKERFILES_BRANCH=master
+            fi
+            if [[ "$CIRCLE_BRANCH" == "master" ]]
+            then
+              export DOCKERFILES_BRANCH=staging
+            fi
+            if [ ! -e $DOCKERFILES_BRANCH ]
+            then
+              git checkout $DOCKERFILES_BRANCH
+              cp -rfv /tmp/dockerfiles/* ~/repo/circleci-dockerfiles
+              git add .
+              git commit --allow-empty -m "Dockerfiles from $CIRCLE_BUILD_URL"
+              git push -f origin $DOCKERFILES_BRANCH
+            fi
 
   refresh_tools_cache:
     docker:
@@ -45,7 +76,6 @@ jobs:
             export NEW_ORG=${NEW_ORG:-$COMPUTED_ORG}
 
             make -j $PLATFORM/publish_images
-            ./shared/images/manifest > manifest.json
       - store_artifacts:
           path: "."
           destination: circleci-bundles
@@ -62,6 +92,7 @@ jobs:
 
   publish_python:
     <<: *publish_image
+    parallelism: 2
     environment:
       - PLATFORM: python
 
@@ -77,8 +108,14 @@ jobs:
 
   publish_php:
     <<: *publish_image
+    parallelism: 3
     environment:
       - PLATFORM: php
+
+  publish_redis:
+    <<: *publish_image
+    environment:
+      - PLATFORM: redis
 
   publish_postgres:
     <<: *publish_image
@@ -122,6 +159,7 @@ jobs:
 
   publish_buildpack-deps:
     <<: *publish_image
+    parallelism: 2
     environment:
       - PLATFORM: buildpack-deps
 
@@ -137,9 +175,6 @@ workflow_filters: &workflow_filters
 
 workflows:
   version: 2
-  build:
-    jobs:
-      - generate_dockerfiles
   build_test_deploy:
     triggers:
       - schedule:
@@ -165,6 +200,7 @@ workflows:
       - publish_ruby:     *workflow_filters
       - publish_golang:   *workflow_filters
       - publish_php:      *workflow_filters
+      - publish_redis:    *workflow_filters
       - publish_postgres: *workflow_filters
       - publish_mariadb:  *workflow_filters
       - publish_mysql:    *workflow_filters
@@ -192,6 +228,7 @@ workflows:
       - publish_ruby:     *workflow_filters
       - publish_golang:   *workflow_filters
       - publish_php:      *workflow_filters
+      - publish_redis:    *workflow_filters
       - publish_postgres: *workflow_filters
       - publish_mariadb:  *workflow_filters
       - publish_mysql:    *workflow_filters
