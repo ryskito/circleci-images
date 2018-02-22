@@ -258,9 +258,7 @@ workflows:
                 - production
     jobs:
       - generate_dockerfiles
-      - generate_automated_build_images:
-          requires:
-          - generate_dockerfiles
+      - generate_automated_build_images
       - refresh_tools_cache:
           requires:
           - generate_dockerfiles
@@ -290,9 +288,7 @@ workflows:
   commit:
     jobs:
       - generate_dockerfiles
-      - generate_automated_build_images:
-          requires:
-          - generate_dockerfiles
+      - generate_automated_build_images
       - refresh_tools_cache:
           requires:
           - generate_dockerfiles
