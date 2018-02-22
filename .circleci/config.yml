@@ -4,29 +4,37 @@ jobs:
     working_directory: ~/repo
     docker:
       - image: gcc:7
+
     steps:
       - checkout
+
       - run:
           name: Generate Dockerfiles
           command: make -j
+
       - run:
           name: Prepare Artifacts
           command: |
             mkdir /tmp/dockerfiles
             find . -name Dockerfile -type f | grep -v shared | xargs -I{} cp -v --parents {} /tmp/dockerfiles
+
       - store_artifacts:
           path: /tmp/dockerfiles
           destination: Dockerfiles
+
       # upload Dockerfiles to circleci-public/circleci-dockerfiles repo
       - add_ssh_keys:
           fingerprints:
             - "af:0a:93:75:51:75:1f:16:90:d9:97:b1:7a:bb:f0:27"
+
       - run:
           name: git config
           command: |
             git config --global user.email "$CIRCLE_USERNAME@users.noreply.github.com"
             git config --global user.name "$CIRCLE_USERNAME"
+
       - run: git clone git@github.com:CircleCI-Public/circleci-dockerfiles.git
+
       # only push Dockerfiles to github on circleci-images pushes to "master" or "production"
       - run:
           name: branch control flow & git push
@@ -49,22 +57,41 @@ jobs:
               git push -f origin $DOCKERFILES_BRANCH
             fi
 
+  generate_automated_build_images:
+    working_directory: ~/repo
+    docker:
+      - image: gcc:7
+
+    steps:
+      - checkout
+
+      - add_ssh_keys:
+          fingerprints:
+            - "9c:e2:cf:bb:f2:25:4d:05:d9:b0:30:bf:73:c5:7d:8f"
+
+
   refresh_tools_cache:
     docker:
       - image: circleci/python:latest
+
     steps:
       - checkout
+
       - run: sudo pip install awscli==1.14.17
+
       - run: cd ./shared/images; ./refresh-tools-cache
 
   publish_image: &publish_image
     machine: true
     working_directory: ~/circleci-bundles
+
     steps:
       - checkout
+
       - run:
           name: Docker Login
           command: docker login -u $DOCKER_USER -p $DOCKER_PASS
+
       - run:
           name: Build and Publish Images
           command: |
@@ -76,6 +103,7 @@ jobs:
             export NEW_ORG=${NEW_ORG:-$COMPUTED_ORG}
 
             make -j $PLATFORM/publish_images
+
       - store_artifacts:
           path: "."
           destination: circleci-bundles
@@ -175,6 +203,7 @@ workflow_filters: &workflow_filters
 
 workflows:
   version: 2
+
   build_test_deploy:
     triggers:
       - schedule:
@@ -210,6 +239,7 @@ workflows:
       - publish_clojure:  *workflow_filters
       - publish_openjdk:  *workflow_filters
       - publish_buildpack-deps:   *workflow_filters
+
   commit:
     jobs:
       - generate_dockerfiles
