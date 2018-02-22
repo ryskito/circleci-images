@@ -10,9 +10,7 @@ jobs:
 
       - run:
           name: Generate Dockerfiles
-          command: |
-            mkdir /tmp/example-images
-            make -j
+          command: make -j
 
       - run:
           name: Prepare Artifacts
@@ -70,8 +68,8 @@ jobs:
       - run:
           name: Generate Dockerfiles, READMEs for automated builds
           command: |
-            mkdir /tmp/example-images
             make -j
+            mkdir /tmp/example-images
             make example_images
 
       - store_artifacts:
