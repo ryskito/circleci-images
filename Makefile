@@ -8,7 +8,7 @@ images: $(foreach b, $(BUNDLES), $(b)/generate_images)
 example_images: $(foreach b, $(BUNDLES), $(b)/example_image)
 
 %/example_image:
-	cd $(@D) && find . -name Dockerfile -type f | head -1 | xargs -I{} cp ~/example-images/$(@D) && find . -name README.md -type f | head -1 | xargs -I{} cp ~/example-images/$(@D)
+	cd $(@D) && find . -name Dockerfile -type f | head -1 | xargs -I{} cp ~/example-images/$(@D)/Dockerfile && find . -name README.md -type f | head -1 | xargs -I{} cp ~/example-images/$(@D)/README.md
 
 publish_images: images
 	find . -name Dockerfile | awk '{ print length, $0 }' | sort -n -s | cut -d" " -f2- | sed 's|/Dockerfile|/publish_image|g' | xargs -n1 make
