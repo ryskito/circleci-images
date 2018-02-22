@@ -51,11 +51,11 @@ jobs:
 
   refresh_tools_cache:
     docker:
-    - image: circleci/python:latest
+      - image: circleci/python:latest
     steps:
-    - checkout
-    - run: sudo pip install awscli
-    - run: cd ./shared/images; ./refresh-tools-cache
+      - checkout
+      - run: sudo pip install awscli==1.14.17
+      - run: cd ./shared/images; ./refresh-tools-cache
 
   publish_image: &publish_image
     machine: true
@@ -68,7 +68,7 @@ jobs:
       - run:
           name: Build and Publish Images
           command: |
-            export COMPUTED_ORG=notnoopci
+            export COMPUTED_ORG=ccistaging
             if [[ "$CIRCLE_BRANCH" == "production" ]]
             then
               export COMPUTED_ORG=circleci
@@ -141,6 +141,11 @@ jobs:
     <<: *publish_image
     environment:
       - PLATFORM: elixir
+
+  publish_rust:
+    <<: *publish_image
+    environment:
+      - PLATFORM: rust
 
   publish_jruby:
     <<: *publish_image
@@ -237,4 +242,5 @@ workflows:
       - publish_jruby:    *workflow_filters
       - publish_clojure:  *workflow_filters
       - publish_openjdk:  *workflow_filters
+      - publish_rust:  *workflow_filters
       - publish_buildpack-deps:   *workflow_filters
